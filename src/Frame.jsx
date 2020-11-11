@@ -114,7 +114,7 @@ export default class Frame extends Component {
     };
  
     if (this._isCompliant) {
-      props.srcdoc = props.initialContent;
+      props.srcDoc = props.initialContent;
     } else { // legacy fallback <= IE11
       props.src = `javascript: ${props.initialContent}`
     }
