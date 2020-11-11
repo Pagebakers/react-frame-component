@@ -36,6 +36,8 @@ export default class Frame extends Component {
   constructor(props, context) {
     super(props, context);
     this._isMounted = false;
+    
+    this._isCompliant = !!("srcdoc" in document.createElement("iframe"));
   }
 
   componentDidMount() {
@@ -97,12 +99,6 @@ export default class Frame extends Component {
       </Content>
     );
 
-    if (doc.body.children.length < 1) {
-      doc.open('text/html', 'replace');
-      doc.write(this.props.initialContent);
-      doc.close();
-    }
-
     const mountTarget = this.getMountTarget();
 
     return [
@@ -116,6 +112,13 @@ export default class Frame extends Component {
       ...this.props,
       children: undefined // The iframe isn't ready so we drop children from props here. #12, #17
     };
+ 
+    if (this._isCompliant) {
+      props.srcdoc = props.initialContent;
+    } else { // legacy fallback <= IE11
+      props.src = `javascript: ${props.initialContent}`
+    }
+ 
     delete props.head;
     delete props.initialContent;
     delete props.mountTarget;
